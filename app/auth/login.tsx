@@ -1,103 +1,176 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
 
 export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    router.push('/main/dashboard');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.logo}>🚶 WalkWise AI</Text>
-
-      <Text style={styles.title}>Welcome Back</Text>
-
-      <TextInput
-        placeholder="Email"
-        placeholderTextColor="#94A3B8"
-        style={styles.input}
-      />
-
-      <TextInput
-        placeholder="Password"
-        placeholderTextColor="#94A3B8"
-        secureTextEntry
-        style={styles.input}
-      />
-
-      <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginText}>Login</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => router.push('/auth/forgot-password')}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.link}>Forgot Password?</Text>
-      </TouchableOpacity>
+        <Text style={styles.logo}>🚶</Text>
 
-      <TouchableOpacity
-        onPress={() => router.push('/auth/register')}
-      >
-        <Text style={styles.link}>
-          Don't have an account? Register
+        <Text style={styles.title}>Welcome Back</Text>
+
+        <Text style={styles.subtitle}>
+          Login to continue your walking and posture journey
         </Text>
-      </TouchableOpacity>
-    </View>
+
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email Address"
+            placeholderTextColor="#64748B"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#64748B"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          <TouchableOpacity
+            onPress={() => router.push('/auth/forgot-password')}
+          >
+            <Text style={styles.forgotPassword}>
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={handleLogin}
+          >
+            <Text style={styles.loginButtonText}>
+              Login
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Don't have an account?
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => router.push('/auth/register')}
+          >
+            <Text style={styles.registerText}>
+              Create Account
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#0F172A',
+    flexGrow: 1,
+    backgroundColor: '#020617',
     justifyContent: 'center',
-    paddingHorizontal: 25,
+    paddingHorizontal: 30,
   },
 
   logo: {
-    color: '#06B6D4',
-    fontSize: 34,
-    fontWeight: 'bold',
+    fontSize: 80,
     textAlign: 'center',
-    marginBottom: 50,
+    marginBottom: 20,
   },
 
   title: {
-    color: 'white',
-    fontSize: 28,
+    color: '#FFFFFF',
+    fontSize: 34,
     fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+
+  subtitle: {
+    color: '#94A3B8',
+    textAlign: 'center',
+    fontSize: 15,
+    lineHeight: 24,
+    marginBottom: 40,
+  },
+
+  form: {
     marginBottom: 30,
   },
 
   input: {
-    backgroundColor: '#1E293B',
-    color: 'white',
-    padding: 15,
-    borderRadius: 12,
+    backgroundColor: '#0F172A',
+    color: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
     marginBottom: 15,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#1E293B',
+  },
+
+  forgotPassword: {
+    color: '#8B5CF6',
+    textAlign: 'right',
+    marginBottom: 25,
+    fontSize: 14,
   },
 
   loginButton: {
-    backgroundColor: '#4F46E5',
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 10,
-    marginBottom: 20,
+    backgroundColor: '#5B4BFF',
+    paddingVertical: 18,
+    borderRadius: 18,
+    alignItems: 'center',
   },
 
-  loginText: {
-    color: 'white',
-    textAlign: 'center',
+  loginButtonText: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
   },
 
-  link: {
-    color: '#06B6D4',
-    textAlign: 'center',
-    marginTop: 15,
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+
+  footerText: {
+    color: '#94A3B8',
+    marginRight: 5,
+  },
+
+  registerText: {
+    color: '#8B5CF6',
+    fontWeight: '600',
   },
 });
