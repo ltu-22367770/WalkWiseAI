@@ -1,176 +1,288 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
-import { router } from 'expo-router';
+} from "react-native";
+import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import {
+  MaterialIcons,
+  FontAwesome,
+  AntDesign,
+} from "@expo/vector-icons";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] =
+    useState("");
+  const [showPassword, setShowPassword] =
+    useState(false);
 
   const handleLogin = () => {
-    router.push('/main/dashboard');
+    router.replace("/main/dashboard");
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
+    <View style={styles.container}>
+      {/* Header */}
+      <Text style={styles.title}>
+        Welcome Back! 👋
+      </Text>
+
+      <Text style={styles.subtitle}>
+        Sign in to continue your journey
+      </Text>
+
+      {/* Email */}
+      <View style={styles.inputContainer}>
+        <MaterialIcons
+          name="email"
+          size={20}
+          color="#8B95B7"
+        />
+
+        <TextInput
+          placeholder="Email"
+          placeholderTextColor="#8B95B7"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+        />
+      </View>
+
+      {/* Password */}
+      <View style={styles.inputContainer}>
+        <MaterialIcons
+          name="lock"
+          size={20}
+          color="#8B95B7"
+        />
+
+        <TextInput
+          placeholder="Password"
+          placeholderTextColor="#8B95B7"
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+        />
+
+        <TouchableOpacity
+          onPress={() =>
+            setShowPassword(!showPassword)
+          }
+        >
+          <MaterialIcons
+            name={
+              showPassword
+                ? "visibility"
+                : "visibility-off"
+            }
+            size={20}
+            color="#8B95B7"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Forgot Password */}
+      <TouchableOpacity
+        style={styles.forgotContainer}
       >
-        <Text style={styles.logo}>🚶</Text>
+        <Text style={styles.forgotText}>
+          Forgot Password?
+        </Text>
+      </TouchableOpacity>
 
-        <Text style={styles.title}>Welcome Back</Text>
+      {/* Login Button */}
+      <TouchableOpacity
+        onPress={handleLogin}
+      >
+        <LinearGradient
+          colors={["#7B2FF7", "#4E7DFF"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.loginButton}
+        >
+          <Text style={styles.loginText}>
+            Login
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
 
-        <Text style={styles.subtitle}>
-          Login to continue your walking and posture journey
+      {/* Divider */}
+      <View style={styles.dividerContainer}>
+        <View style={styles.line} />
+
+        <Text style={styles.dividerText}>
+          or continue with
         </Text>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email Address"
-            placeholderTextColor="#64748B"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
+        <View style={styles.line} />
+      </View>
+
+      {/* Social Login */}
+      <View style={styles.socialRow}>
+        <TouchableOpacity
+          style={styles.socialButton}
+        >
+          <AntDesign
+            name="google"
+            size={26}
+            color="#EA4335"
           />
+        </TouchableOpacity>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#64748B"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
+        <TouchableOpacity
+          style={styles.socialButton}
+        >
+          <AntDesign
+            name="apple"
+            size={26}
+            color="#FFFFFF"
           />
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => router.push('/auth/forgot-password')}
-          >
-            <Text style={styles.forgotPassword}>
-              Forgot Password?
-            </Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.socialButton}
+        >
+          <FontAwesome
+            name="facebook"
+            size={26}
+            color="#1877F2"
+          />
+        </TouchableOpacity>
+      </View>
 
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLogin}
-          >
-            <Text style={styles.loginButtonText}>
-              Login
-            </Text>
-          </TouchableOpacity>
-        </View>
+      {/* Register */}
+      <View style={styles.registerRow}>
+        <Text style={styles.registerText}>
+          Don't have an account?
+        </Text>
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Don't have an account?
+        <TouchableOpacity
+          onPress={() =>
+            router.push("/auth/register")
+          }
+        >
+          <Text style={styles.registerLink}>
+            Register
           </Text>
-
-          <TouchableOpacity
-            onPress={() => router.push('/auth/register')}
-          >
-            <Text style={styles.registerText}>
-              Create Account
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor: '#020617',
-    justifyContent: 'center',
-    paddingHorizontal: 30,
-  },
-
-  logo: {
-    fontSize: 80,
-    textAlign: 'center',
-    marginBottom: 20,
+    flex: 1,
+    backgroundColor: "#050B2C",
+    paddingHorizontal: 25,
+    justifyContent: "center",
   },
 
   title: {
-    color: '#FFFFFF',
-    fontSize: 34,
-    fontWeight: '700',
-    textAlign: 'center',
+    color: "#FFFFFF",
+    fontSize: 30,
+    fontWeight: "700",
     marginBottom: 10,
   },
 
   subtitle: {
-    color: '#94A3B8',
-    textAlign: 'center',
+    color: "#9AA5C4",
     fontSize: 15,
-    lineHeight: 24,
-    marginBottom: 40,
+    marginBottom: 35,
   },
 
-  form: {
-    marginBottom: 30,
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#101A44",
+    borderRadius: 14,
+    paddingHorizontal: 15,
+    height: 60,
+    marginBottom: 15,
   },
 
   input: {
-    backgroundColor: '#0F172A',
-    color: '#FFFFFF',
-    borderRadius: 16,
-    paddingVertical: 18,
-    paddingHorizontal: 18,
-    marginBottom: 15,
+    flex: 1,
+    color: "#FFFFFF",
+    marginLeft: 10,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#1E293B',
   },
 
-  forgotPassword: {
-    color: '#8B5CF6',
-    textAlign: 'right',
+  forgotContainer: {
+    alignItems: "flex-end",
     marginBottom: 25,
+  },
+
+  forgotText: {
+    color: "#6C63FF",
     fontSize: 14,
   },
 
   loginButton: {
-    backgroundColor: '#5B4BFF',
-    paddingVertical: 18,
-    borderRadius: 18,
-    alignItems: 'center',
+    height: 58,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
-  loginButtonText: {
-    color: '#FFFFFF',
+  loginText: {
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "700",
   },
 
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 35,
   },
 
-  footerText: {
-    color: '#94A3B8',
-    marginRight: 5,
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#26304D",
+  },
+
+  dividerText: {
+    color: "#7E8AAE",
+    marginHorizontal: 12,
+    fontSize: 13,
+  },
+
+  socialRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 35,
+  },
+
+  socialButton: {
+    width: 90,
+    height: 60,
+    borderRadius: 14,
+    backgroundColor: "#101A44",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  registerRow: {
+    flexDirection: "row",
+    justifyContent: "center",
   },
 
   registerText: {
-    color: '#8B5CF6',
-    fontWeight: '600',
+    color: "#A0AAC8",
+  },
+
+  registerLink: {
+    color: "#6C63FF",
+    fontWeight: "700",
+    marginLeft: 5,
   },
 });

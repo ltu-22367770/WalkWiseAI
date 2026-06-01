@@ -1,116 +1,192 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Image,
-} from 'react-native';
-import { router } from 'expo-router';
+} from "react-native";
+import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Onboarding3() {
   return (
     <View style={styles.container}>
+      {/* Skip */}
+      <TouchableOpacity
+        style={styles.skipContainer}
+        onPress={() => router.replace("/auth/login")}
+      >
+        <Text style={styles.skip}>Skip</Text>
+      </TouchableOpacity>
+
+      {/* Title */}
+      <Text style={styles.title}>
+        Walk Smarter Every Day
+      </Text>
+
+      {/* Description */}
+      <Text style={styles.description}>
+        Track activity, improve posture{"\n"}
+        and build healthy habits{"\n"}
+        with AI coaching.
+      </Text>
+
+      {/* Logo */}
       <Image
-        source={require('../../assets/images/walkwise-logo.png')}
+        source={require("../../assets/images/onboarding3.png")}
         style={styles.image}
         resizeMode="contain"
       />
 
-      <Text style={styles.title}>AI Health Insights</Text>
+      {/* Features */}
+      <View style={styles.featuresContainer}>
+        <View style={styles.feature}>
+          <Text style={styles.featureText}>🏆 Goals</Text>
+        </View>
 
-      <Text style={styles.description}>
-        Get AI-powered walking scores,
-        activity analysis and personalized
-        movement insights.
-      </Text>
+        <View style={styles.feature}>
+          <Text style={styles.featureText}>📍 GPS</Text>
+        </View>
 
+        <View style={styles.feature}>
+          <Text style={styles.featureText}>🤖 AI Coach</Text>
+        </View>
+
+        <View style={styles.feature}>
+          <Text style={styles.featureText}>📈 Progress</Text>
+        </View>
+      </View>
+
+      {/* Push bottom content down */}
+      <View style={{ flex: 1 }} />
+
+      {/* Dots */}
       <View style={styles.dots}>
         <View style={styles.dot} />
         <View style={styles.dot} />
         <View style={[styles.dot, styles.active]} />
       </View>
 
+      {/* Get Started */}
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/auth/login')}
+        style={styles.buttonWrapper}
+        onPress={() =>
+          router.replace("/auth/login")
+        }
       >
-        <Text style={styles.buttonText}>Get Started</Text>
+        <LinearGradient
+          colors={["#7B2FF7", "#4E7DFF"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>
+            Get Started
+          </Text>
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
 }
 
-const styles = createStyles();
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#050B2C",
+    alignItems: "center",
+    paddingTop: 70,
+    paddingHorizontal: 30,
+    paddingBottom: 40,
+  },
 
-function createStyles() {
-  return StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#020617',
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 30,
-    },
+  skipContainer: {
+    position: "absolute",
+    right: 25,
+    top: 90,
+    zIndex: 10,
+  },
 
-    image: {
-      width: 180,
-      height: 180,
-      marginBottom: 40,
-    },
+  skip: {
+    color: "#B8C0D9",
+    fontSize: 16,
+  },
 
-    title: {
-      color: '#FFFFFF',
-      fontSize: 30,
-      fontWeight: '700',
-      marginBottom: 20,
-      textAlign: 'center',
-    },
+  title: {
+    color: "#FFFFFF",
+    fontSize: 30,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: 60,
+  },
 
-    description: {
-      color: '#94A3B8',
-      textAlign: 'center',
-      fontSize: 16,
-      lineHeight: 28,
-      marginBottom: 60,
-    },
+  description: {
+    color: "#A7B3D0",
+    textAlign: "center",
+    lineHeight: 28,
+    fontSize: 16,
+    marginTop: 15,
+  },
 
-    dots: {
-      flexDirection: 'row',
-      marginBottom: 35,
-    },
+  image: {
+    width: 400,
+    height: 400,
+    marginTop: 30,
+  },
 
-    dot: {
-      width: 10,
-      height: 10,
-      borderRadius: 5,
-      backgroundColor: '#475569',
-      marginHorizontal: 5,
-    },
+  featuresContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: 10,
+    marginBottom: 20,
+  },
 
-    active: {
-      width: 24,
-      backgroundColor: '#8B5CF6',
-    },
+  feature: {
+    backgroundColor: "#101A44",
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    margin: 6,
+  },
 
-    button: {
-      backgroundColor: '#5B4BFF',
-      width: '100%',
-      paddingVertical: 18,
-      borderRadius: 18,
-      alignItems: 'center',
-      marginBottom: 20,
-    },
+  featureText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
 
-    buttonText: {
-      color: '#FFFFFF',
-      fontSize: 18,
-      fontWeight: '600',
-    },
+  dots: {
+    flexDirection: "row",
+    marginBottom: 25,
+  },
 
-    skip: {
-      color: '#94A3B8',
-      fontSize: 15,
-    },
-  });
-}
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#4A4E69",
+    marginHorizontal: 5,
+  },
+
+  active: {
+    width: 24,
+    backgroundColor: "#7B2FF7",
+  },
+
+  buttonWrapper: {
+    width: "100%",
+  },
+
+  button: {
+    height: 62,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+});
