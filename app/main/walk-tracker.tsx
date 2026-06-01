@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,97 +6,122 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import * as Location from "expo-location";
+import { useLocalSearchParams } from "expo-router";
 
 export default function WalkTrackerScreen() {
+  const { title, goal } = useLocalSearchParams();
+
   const [tracking, setTracking] = useState(false);
-  const [distance, setDistance] = useState(0);
   const [time, setTime] = useState(0);
+  const [distance, setDistance] = useState(0);
 
   useEffect(() => {
-    let timer: ReturnType<typeof setInterval>;
+    let interval: ReturnType<typeof setInterval>;
 
     if (tracking) {
-      timer = setInterval(() => {
+      interval = setInterval(() => {
         setTime((prev) => prev + 1);
+
+        setDistance((prev) =>
+          Number((prev + 0.01).toFixed(2))
+        );
       }, 1000);
     }
 
-    return () => clearInterval(timer);
+    return () => clearInterval(interval);
   }, [tracking]);
-
-  const startTracking = async () => {
-    const { status } =
-      await Location.requestForegroundPermissionsAsync();
-
-    if (status !== "granted") return;
-
-    setTracking(true);
-  };
-
-  const stopTracking = () => {
-    setTracking(false);
-  };
-
-  const resetTracking = () => {
-    setTracking(false);
-    setDistance(0);
-    setTime(0);
-  };
 
   const formatTime = () => {
     const mins = Math.floor(time / 60);
     const secs = time % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+
+    return `${mins
+      .toString()
+      .padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
+
+  const calories = Math.round(distance * 60);
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>🚶 Walk Tracker</Text>
+      <Text style={styles.title}>
+        🚶 Walk Tracker
+      </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.score}>{distance.toFixed(2)} km</Text>
-        <Text style={styles.label}>Distance Travelled</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.score}>{formatTime()}</Text>
-        <Text style={styles.label}>Walk Duration</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.score}>
-          {Math.round(distance * 60)}
+      <View style={styles.activityCard}>
+        <Text style={styles.activityTitle}>
+          {title || "Activity"}
         </Text>
-        <Text style={styles.label}>Calories Burned</Text>
-      </View>
 
-      <TouchableOpacity
-        style={styles.startBtn}
-        onPress={startTracking}
-      >
-        <Text style={styles.btnText}>▶ Start Walk</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.stopBtn}
-        onPress={stopTracking}
-      >
-        <Text style={styles.btnText}>⏸ Pause Walk</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.resetBtn}
-        onPress={resetTracking}
-      >
-        <Text style={styles.btnText}>⏹ Reset</Text>
-      </TouchableOpacity>
-
-      <View style={styles.statusCard}>
-        <Text style={styles.status}>
-          Status: {tracking ? "Tracking..." : "Stopped"}
+        <Text style={styles.goal}>
+          Goal: {goal || "2.5 km"}
         </Text>
       </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>
+          Distance
+        </Text>
+
+        <Text style={styles.big}>
+          {distance.toFixed(2)} km
+        </Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>
+          Time
+        </Text>
+
+        <Text style={styles.big}>
+          {formatTime()}
+        </Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>
+          Calories
+        </Text>
+
+        <Text style={styles.big}>
+          {calories}
+        </Text>
+      </View>
+
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={() => setTracking(true)}
+        >
+          <Text style={styles.buttonText}>
+            Start
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.pauseButton}
+          onPress={() => setTracking(false)}
+        >
+          <Text style={styles.buttonText}>
+            Pause
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity
+        style={styles.resetButton}
+        onPress={() => {
+          setTracking(false);
+          setDistance(0);
+          setTime(0);
+        }}
+      >
+        <Text style={styles.buttonText}>
+          Reset Activity
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -110,69 +135,80 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: "#fff",
-    fontSize: 32,
-    fontWeight: "bold",
+    color: "#FFFFFF",
+    fontSize: 30,
+    fontWeight: "700",
     marginBottom: 20,
+  },
+
+  activityCard: {
+    backgroundColor: "#101A44",
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
+  },
+
+  activityTitle: {
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "700",
+  },
+
+  goal: {
+    color: "#94A3B8",
+    marginTop: 8,
   },
 
   card: {
     backgroundColor: "#101A44",
     borderRadius: 20,
-    padding: 25,
+    padding: 20,
     marginBottom: 15,
-  },
-
-  score: {
-    color: "#fff",
-    fontSize: 32,
-    fontWeight: "bold",
+    alignItems: "center",
   },
 
   label: {
-    color: "#A8B0D3",
-    marginTop: 5,
-    fontSize: 16,
+    color: "#94A3B8",
+    marginBottom: 10,
   },
 
-  startBtn: {
-    backgroundColor: "#6C63FF",
-    padding: 18,
-    borderRadius: 15,
-    marginTop: 10,
+  big: {
+    color: "#FFFFFF",
+    fontSize: 32,
+    fontWeight: "700",
   },
 
-  stopBtn: {
-    backgroundColor: "#FF9800",
-    padding: 18,
-    borderRadius: 15,
-    marginTop: 10,
-  },
-
-  resetBtn: {
-    backgroundColor: "#F44336",
-    padding: 18,
-    borderRadius: 15,
-    marginTop: 10,
-  },
-
-  btnText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-
-  statusCard: {
-    backgroundColor: "#101A44",
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
-    padding: 20,
-    borderRadius: 20,
   },
 
-  status: {
-    color: "#fff",
-    fontSize: 18,
+  startButton: {
+    flex: 1,
+    backgroundColor: "#22C55E",
+    padding: 16,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+
+  pauseButton: {
+    flex: 1,
+    backgroundColor: "#F59E0B",
+    padding: 16,
+    borderRadius: 15,
+  },
+
+  resetButton: {
+    backgroundColor: "#EF4444",
+    padding: 16,
+    borderRadius: 15,
+    marginTop: 15,
+  },
+
+  buttonText: {
+    color: "#FFFFFF",
     textAlign: "center",
+    fontWeight: "700",
   },
 });

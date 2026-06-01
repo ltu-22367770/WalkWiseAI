@@ -258,7 +258,7 @@ export default function DashboardScreen() {
 
         <TouchableOpacity
           onPress={() =>
-            router.push('/main/walk-tracker')
+            router.push('/main/activity')
           }
         >
           <Text style={styles.navIcon}>🚶</Text>
@@ -269,7 +269,7 @@ export default function DashboardScreen() {
 
         <TouchableOpacity
           onPress={() =>
-            router.push('/main/maps')
+            router.push('/main/ai-coach')
           }
         >
           <View style={styles.plusButton}>
@@ -277,7 +277,10 @@ export default function DashboardScreen() {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            router.push('/main/analytics')
+          }>
           <Text style={styles.navIcon}>📊</Text>
           <Text style={styles.navText}>
             Insights

@@ -5,116 +5,166 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
+  TouchableOpacity,
 } from "react-native";
 
 export default function SettingsScreen() {
-  const [walkReminder, setWalkReminder] =
-    useState(true);
-
-  const [postureAlert, setPostureAlert] =
-    useState(true);
-
-  const [hydrationReminder, setHydrationReminder] =
-    useState(true);
-
-  const [aiCoach, setAiCoach] =
-    useState(true);
+  const [autoStart, setAutoStart] = useState(true);
+  const [postureAlerts, setPostureAlerts] = useState(true);
+  const [vibration, setVibration] = useState(true);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{
+        paddingBottom: 120,
+      }}
+    >
+      {/* Header */}
       <Text style={styles.title}>
         ⚙ Settings
       </Text>
 
+      {/* General */}
+      <Text style={styles.sectionTitle}>
+        General
+      </Text>
+
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>
-          Notifications
-        </Text>
+        <TouchableOpacity style={styles.row}>
+          <Text style={styles.label}>
+            📏 Units
+          </Text>
 
+          <View style={styles.rightSection}>
+            <Text style={styles.value}>
+              Metric (km)
+            </Text>
+            <Text style={styles.arrow}>›</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.row}>
+          <Text style={styles.label}>
+            🌙 Theme
+          </Text>
+
+          <View style={styles.rightSection}>
+            <Text style={styles.value}>
+              Dark
+            </Text>
+            <Text style={styles.arrow}>›</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.rowNoBorder}>
+          <Text style={styles.label}>
+            🌍 Language
+          </Text>
+
+          <View style={styles.rightSection}>
+            <Text style={styles.value}>
+              English
+            </Text>
+            <Text style={styles.arrow}>›</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* Preferences */}
+      <Text style={styles.sectionTitle}>
+        Preferences
+      </Text>
+
+      <View style={styles.card}>
         <View style={styles.row}>
           <Text style={styles.label}>
-            Daily Walk Reminder
+            🚶 Auto Start Tracking
           </Text>
 
           <Switch
-            value={walkReminder}
-            onValueChange={setWalkReminder}
+            value={autoStart}
+            onValueChange={setAutoStart}
+            trackColor={{
+              false: "#374151",
+              true: "#22C55E",
+            }}
           />
         </View>
 
         <View style={styles.row}>
           <Text style={styles.label}>
-            Posture Alerts
+            🧍 Posture Alerts
           </Text>
 
           <Switch
-            value={postureAlert}
-            onValueChange={setPostureAlert}
+            value={postureAlerts}
+            onValueChange={setPostureAlerts}
+            trackColor={{
+              false: "#374151",
+              true: "#22C55E",
+            }}
           />
         </View>
 
-        <View style={styles.row}>
+        <View style={styles.rowNoBorder}>
           <Text style={styles.label}>
-            Hydration Reminder
+            📳 Vibration
           </Text>
 
           <Switch
-            value={hydrationReminder}
-            onValueChange={setHydrationReminder}
-          />
-        </View>
-
-        <View style={styles.row}>
-          <Text style={styles.label}>
-            AI Coach Notifications
-          </Text>
-
-          <Switch
-            value={aiCoach}
-            onValueChange={setAiCoach}
+            value={vibration}
+            onValueChange={setVibration}
+            trackColor={{
+              false: "#374151",
+              true: "#22C55E",
+            }}
           />
         </View>
       </View>
 
+      {/* Data & Storage */}
+      <Text style={styles.sectionTitle}>
+        Data & Storage
+      </Text>
+
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>
-          Tracking Preferences
-        </Text>
+        <TouchableOpacity style={styles.rowNoBorder}>
+          <Text style={styles.label}>
+            🔄 Sync Now
+          </Text>
 
-        <Text style={styles.info}>
-          • GPS Tracking Enabled
-        </Text>
-
-        <Text style={styles.info}>
-          • Real-Time Posture Analysis
-        </Text>
-
-        <Text style={styles.info}>
-          • Health Reports Enabled
-        </Text>
+          <Text style={styles.arrow}>
+            ›
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>
-          About WalkWise AI
-        </Text>
-
-        <Text style={styles.info}>
-          WalkWise AI helps users improve
-          walking habits, monitor posture,
-          track activity and receive
-          intelligent health insights.
-        </Text>
-      </View>
+      {/* App Info */}
+      <Text style={styles.sectionTitle}>
+        App Information
+      </Text>
 
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>
-          App Version
-        </Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>
+            Version
+          </Text>
 
-        <Text style={styles.info}>
-          WalkWise AI v1.0.0
-        </Text>
+          <Text style={styles.value}>
+            1.0.0
+          </Text>
+        </View>
+
+        <View style={styles.rowNoBorder}>
+          <Text style={styles.label}>
+            WalkWise AI
+          </Text>
+
+          <Text style={styles.value}>
+            Premium
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -124,46 +174,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#050B2C",
-    padding: 20,
     paddingTop: 70,
+    paddingHorizontal: 20,
   },
 
   title: {
     color: "#FFFFFF",
     fontSize: 30,
     fontWeight: "700",
-    marginBottom: 20,
+    marginBottom: 25,
+  },
+
+  sectionTitle: {
+    color: "#94A3B8",
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 10,
+    marginTop: 10,
   },
 
   card: {
     backgroundColor: "#101A44",
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 18,
     marginBottom: 20,
-  },
-
-  sectionTitle: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 15,
+    overflow: "hidden",
   },
 
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: "#1F2B59",
+  },
+
+  rowNoBorder: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 18,
+    paddingVertical: 18,
   },
 
   label: {
-    color: "#D6D8E6",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontSize: 15,
   },
 
-  info: {
-    color: "#D6D8E6",
-    fontSize: 15,
-    lineHeight: 24,
+  value: {
+    color: "#94A3B8",
+    fontSize: 14,
+  },
+
+  rightSection: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  arrow: {
+    color: "#94A3B8",
+    fontSize: 22,
+    marginLeft: 10,
   },
 });
