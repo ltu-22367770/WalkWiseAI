@@ -27,7 +27,10 @@ export default function DashboardScreen() {
             </Text>
           </View>
 
-          <TouchableOpacity style={styles.bellButton}>
+          <TouchableOpacity style={styles.bellButton}
+            onPress={() =>
+            router.push("/main/notifications")
+          }>
             <Text style={styles.bell}>🔔</Text>
           </TouchableOpacity>
         </View>
@@ -120,6 +123,47 @@ export default function DashboardScreen() {
           </Text>
         </View>
 
+        {/* Quick Access */}
+      <View style={styles.quickAccessRow}>
+        <TouchableOpacity
+          style={styles.quickAccessCard}
+          onPress={() =>
+            router.push("/main/health-report")
+          }
+        >
+          <Text style={styles.quickIcon}>
+            📊
+          </Text>
+
+          <Text style={styles.quickTitle}>
+            Health Report
+          </Text>
+
+          <Text style={styles.quickSubtitle}>
+            View overall health insights
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.quickAccessCard}
+          onPress={() =>
+            router.push("/main/battery")
+          }
+        >
+          <Text style={styles.quickIcon}>
+            🔋
+          </Text>
+
+          <Text style={styles.quickTitle}>
+            Battery
+          </Text>
+
+          <Text style={styles.quickSubtitle}>
+            Device battery analytics
+          </Text>
+        </TouchableOpacity>
+      </View>
+
         {/* Posture Analysis */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
@@ -200,6 +244,8 @@ export default function DashboardScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
@@ -415,6 +461,49 @@ const styles = StyleSheet.create({
     marginTop:10,
     lineHeight:22,
   },
+
+  quickAccessRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginBottom: 25,
+},
+
+quickAccessCard: {
+  backgroundColor: "#0B1530",
+  width: "48%",
+  borderRadius: 20,
+  padding: 18,
+  alignItems: "center",
+
+  shadowColor: "#6C63FF",
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 8,
+
+  elevation: 6,
+},
+
+quickIcon: {
+  fontSize: 34,
+  marginBottom: 10,
+},
+
+quickTitle: {
+  color: "#FFFFFF",
+  fontSize: 16,
+  fontWeight: "700",
+  textAlign: "center",
+},
+
+quickSubtitle: {
+  color: "#94A3B8",
+  fontSize: 12,
+  textAlign: "center",
+  marginTop: 6,
+},
 
   bottomNav:{
     position:'absolute',
