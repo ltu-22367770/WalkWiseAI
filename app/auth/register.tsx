@@ -1,3 +1,7 @@
+import { Alert } from "react-native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import React, { useState } from "react";
 import {
   View,
@@ -32,8 +36,68 @@ export default function SignupScreen() {
   const [agree,
     setAgree] = useState(true);
 
-  const handleRegister = () => {
-    router.replace("/main/dashboard");
+  const handleRegister = async () => {
+    if (
+      !fullName ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
+      Alert.alert(
+        "Missing Information",
+        "Please fill all fields."
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert(
+        "Password Error",
+        "Passwords do not match."
+      );
+      return;
+    }
+
+    if (!agree) {
+      Alert.alert(
+        "Terms Required",
+        "Please accept Terms & Conditions."
+      );
+      return;
+    }
+
+    try {
+      const userCredential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email.trim(),
+          password
+        );
+
+      const user = userCredential.user;
+
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          uid: user.uid,
+          fullName: fullName,
+          email: email.trim(),
+          createdAt: new Date(),
+        }
+      );
+
+      Alert.alert(
+        "Success",
+        "Account created successfully!"
+      );
+
+      router.replace("/main/dashboard");
+    } catch (error: any) {
+      Alert.alert(
+        "Registration Failed",
+        error.message
+      );
+    }
   };
 
   return (

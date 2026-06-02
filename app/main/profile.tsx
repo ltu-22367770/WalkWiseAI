@@ -115,6 +115,9 @@ export default function ProfileScreen() {
 
       {/* Logout */}
       <TouchableOpacity
+        onPress={() =>
+              router.push("/auth/login")
+            }
         style={styles.logoutButton}
       >
         <Text style={styles.logoutText}>

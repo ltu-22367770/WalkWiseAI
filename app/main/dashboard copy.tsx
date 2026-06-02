@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { auth, db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+
+import React from 'react';
 import {
   View,
   Text,
@@ -11,33 +10,6 @@ import {
 import { router } from 'expo-router';
 
 export default function DashboardScreen() {
-
-  const [userName, setUserName] = useState("User");
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const user = auth.currentUser;
-
-        if (!user) return;
-
-        const userDoc = await getDoc(
-          doc(db, "users", user.uid)
-        );
-
-        if (userDoc.exists()) {
-          setUserName(
-            userDoc.data().fullName
-          );
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    loadUser();
-  }, []);
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -48,13 +20,83 @@ export default function DashboardScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>
-              Dashboard
+              Hello, Vihar 👋
             </Text>
 
             <Text style={styles.subTitle}>
-              Welcome back, {userName}! 👋
+              {new Date().getHours() < 12
+                ? "Good Morning!"
+                : new Date().getHours() < 17
+                ? "Good Afternoon!"
+                : "Good Evening!"}
             </Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>
+              Today's Progress
+            </Text>
+
+            <Text style={{
+              color:'#fff',
+              fontSize:36,
+              fontWeight:'700',
+              marginTop:10,
+            }}>
+              7,842
+              <Text style={{
+                color:'#94A3B8',
+                fontSize:18,
+              }}>
+                /10,000
+              </Text>
+            </Text>
+
+            <Text style={{
+              color:'#94A3B8',
+              marginTop:5,
+            }}>
+              Steps Completed
+            </Text>
+
+            <View style={styles.progressBackground}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width:'78%' }
+                ]}
+              />
             </View>
+          </View>
+
+          <View
+            style={{
+              flexDirection:'row',
+              flexWrap:'wrap',
+              justifyContent:'space-between',
+              marginBottom:20,
+            }}
+          >
+            <View style={[styles.card,{width:'48%',padding:15}]}>
+              <Text style={styles.metricLabel}>Distance</Text>
+              <Text style={styles.metricValue}>5.6 km</Text>
+            </View>
+
+            <View style={[styles.card,{width:'48%',padding:15}]}>
+              <Text style={styles.metricLabel}>Calories</Text>
+              <Text style={styles.metricValue}>320 kcal</Text>
+            </View>
+
+            <View style={[styles.card,{width:'48%',padding:15}]}>
+              <Text style={styles.metricLabel}>Active Time</Text>
+              <Text style={styles.metricValue}>45 min</Text>
+            </View>
+
+            <View style={[styles.card,{width:'48%',padding:15}]}>
+              <Text style={styles.metricLabel}>Posture</Text>
+              <Text style={styles.metricValue}>82/100</Text>
+            </View>
+          </View>
 
           <TouchableOpacity style={styles.bellButton}
             onPress={() =>
@@ -69,6 +111,7 @@ export default function DashboardScreen() {
           Today's Overview
         </Text>
 
+        {/* Steps */}
         <View style={styles.overviewCard}>
           <View style={styles.overviewItem}>
             <Text style={styles.overviewIcon}>👣</Text>
@@ -94,6 +137,18 @@ export default function DashboardScreen() {
             <Text style={styles.overviewValue}>45</Text>
             <Text style={styles.overviewSub}>min</Text>
           </View>
+        </View>
+
+        {/* AI Coach */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>
+            🤖 AI Coach
+          </Text>
+
+          <Text style={styles.tipText}>
+            You walked 12% more today than yesterday.
+            Great progress!
+          </Text>
         </View>
 
         {/* Walk Tracker */}
@@ -258,6 +313,17 @@ export default function DashboardScreen() {
               ]}
             />
           </View>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>
+            🔥 7 Day Streak
+          </Text>
+
+          <Text style={styles.tipText}>
+            Keep walking daily to maintain
+            your streak and unlock achievements.
+          </Text>
         </View>
 
         {/* AI Tip */}
@@ -571,4 +637,5 @@ quickSubtitle: {
     fontWeight:'700',
   },
 });
+
 

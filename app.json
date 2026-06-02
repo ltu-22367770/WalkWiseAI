@@ -41,6 +41,14 @@
           }
         }
       ],
+
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow WalkWise AI to access your location for walking and GPS tracking."
+        }
+      ],
+
       "expo-sqlite"
     ],
 

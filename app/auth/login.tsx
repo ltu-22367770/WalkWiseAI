@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { Alert } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 import {
   View,
   Text,
@@ -21,8 +24,29 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] =
     useState(false);
 
-  const handleLogin = () => {
-    router.replace("/main/dashboard");
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert(
+        "Missing Fields",
+        "Please enter email and password"
+      );
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
+      router.replace("/main/dashboard");
+    } catch (error: any) {
+      Alert.alert(
+        "Login Failed",
+        error.message
+      );
+    }
   };
 
   return (
@@ -146,7 +170,7 @@ export default function LoginScreen() {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/*<TouchableOpacity
           style={styles.socialButton}
         >
           <FontAwesome
@@ -154,7 +178,7 @@ export default function LoginScreen() {
             size={26}
             color="#1877F2"
           />
-        </TouchableOpacity>
+        </TouchableOpacity>*/}
       </View>
 
       {/* Register */}
