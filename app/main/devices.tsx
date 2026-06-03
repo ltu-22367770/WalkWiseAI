@@ -8,11 +8,7 @@ import {
 
 export default function DevicesScreen() {
   const devices = [
-    {
-      name: "Apple Health",
-      status: "Connected",
-      icon: "🍎",
-    },
+    
     {
       name: "Google Fit",
       status: "Connected",
@@ -23,11 +19,7 @@ export default function DevicesScreen() {
       status: "Not Connected",
       icon: "⌚",
     },
-    {
-      name: "Bluetooth Sensor",
-      status: "Not Connected",
-      icon: "📡",
-    },
+  
   ];
 
   return (

@@ -1,4 +1,16 @@
-import React from "react";
+import { signOut } from "firebase/auth";
+import { auth, db } from "../firebase";
+
+import React, {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  doc,
+  getDoc,
+} from "firebase/firestore";
+
 import {
   View,
   Text,
@@ -6,10 +18,85 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+
 import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
+
   const router = useRouter();
+
+  const [fullName, setFullName] =
+    useState("User");
+
+  const [email, setEmail] =
+    useState("");
+
+  const [initial, setInitial] =
+    useState("U");
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+
+    try {
+
+      const user =
+        auth.currentUser;
+
+      if (!user) return;
+
+      setEmail(
+        user.email || ""
+      );
+
+      const userDoc =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+      if (
+        userDoc.exists()
+      ) {
+
+        const data =
+          userDoc.data();
+
+        const name =
+          data.fullName ||
+          "User";
+
+        setFullName(
+          name
+        );
+
+        setInitial(
+          name
+            .charAt(0)
+            .toUpperCase()
+        );
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
+
+  const handleLogout = async () => {
+
+    await signOut(auth);
+
+    router.replace(
+      "/auth/login"
+    );
+  };
 
   const menuItems = [
     {
@@ -66,64 +153,106 @@ export default function ProfileScreen() {
         paddingBottom: 120,
       }}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Profile</Text>
-      </View>
 
-      {/* Profile Section */}
+       <View style={styles.header}>
+
+          <TouchableOpacity
+            onPress={() =>
+              router.replace("/main/dashboard")
+            }
+          >
+            <View style={styles.backCircle}>
+              <Text style={styles.backText}>
+                ←
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <Text style={styles.title}>
+            
+          </Text>
+
+        </View>
+
       <View style={styles.profileSection}>
+
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>V</Text>
+          <Text style={styles.avatarText}>
+            {initial}
+          </Text>
         </View>
 
         <Text style={styles.name}>
-          Vihar Patel
+          {fullName}
         </Text>
 
         <Text style={styles.email}>
-          vihar@email.com
+          {email}
         </Text>
+
       </View>
 
-      {/* Menu */}
       <View style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.menuItem}
-            onPress={() =>
-              router.push(item.route as any)
-            }
-          >
-            <View style={styles.leftSection}>
-              <Text style={styles.icon}>
-                {item.icon}
+
+        {menuItems.map(
+          (item, index) => (
+
+            <TouchableOpacity
+              key={index}
+              style={styles.menuItem}
+              onPress={() =>
+                router.push(
+                  item.route as any
+                )
+              }
+            >
+
+              <View
+                style={
+                  styles.leftSection
+                }
+              >
+
+                <Text
+                  style={styles.icon}
+                >
+                  {item.icon}
+                </Text>
+
+                <Text
+                  style={
+                    styles.menuText
+                  }
+                >
+                  {item.title}
+                </Text>
+
+              </View>
+
+              <Text
+                style={styles.arrow}
+              >
+                ›
               </Text>
 
-              <Text style={styles.menuText}>
-                {item.title}
-              </Text>
-            </View>
+            </TouchableOpacity>
 
-            <Text style={styles.arrow}>
-              ›
-            </Text>
-          </TouchableOpacity>
-        ))}
+          )
+        )}
+
       </View>
 
-      {/* Logout */}
       <TouchableOpacity
-        onPress={() =>
-              router.push("/auth/login")
-            }
+        onPress={handleLogout}
         style={styles.logoutButton}
       >
+
         <Text style={styles.logoutText}>
           Logout
         </Text>
+
       </TouchableOpacity>
+
     </ScrollView>
   );
 }
@@ -159,6 +288,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
+  },
+
+  backCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#101A44",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+
+  backText: {
+    color: "#FFFFFF",
+    fontSize: 24,
+    fontWeight: "700",
   },
 
   avatarText: {

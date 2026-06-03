@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
+
 import {
   View,
   Text,
@@ -8,35 +9,118 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import {
+  collection,
+  getDocs,
+} from "firebase/firestore";
 import { router } from 'expo-router';
 
 export default function DashboardScreen() {
 
   const [userName, setUserName] = useState("User");
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const user = auth.currentUser;
+  const [steps, setSteps] = useState(0);
+  const [calories, setCalories] = useState(0);
+  const [activeMinutes, setActiveMinutes] = useState(0);
 
-        if (!user) return;
+  const [distance, setDistance] = useState(0);
+  const [walkTime, setWalkTime] = useState("00:00");
+  const [walkCalories, setWalkCalories] = useState(0);
+  
 
-        const userDoc = await getDoc(
-          doc(db, "users", user.uid)
+ useEffect(() => {
+
+  const loadUser = async () => {
+
+    try {
+
+      const user = auth.currentUser;
+
+      if (!user) return;
+
+      const userDoc = await getDoc(
+        doc(db, "users", user.uid)
+      );
+
+      if (userDoc.exists()) {
+        setUserName(
+          userDoc.data().fullName
+        );
+      }
+
+      const snapshot = await getDocs(
+        collection(
+          db,
+          "users",
+          user.uid,
+          "activities"
+        )
+      );
+
+      let totalDistance = 0;
+      let totalCalories = 0;
+      let totalMinutes = 0;
+
+      snapshot.forEach((doc) => {
+
+        const data = doc.data();
+
+        totalDistance += Number(
+          data.distance || 0
         );
 
-        if (userDoc.exists()) {
-          setUserName(
-            userDoc.data().fullName
-          );
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+        totalCalories += Number(
+          data.calories || 0
+        );
 
-    loadUser();
-  }, []);
+        const duration =
+          data.duration || "00:00";
+
+        const parts =
+          duration.split(":");
+
+        totalMinutes +=
+          Number(parts[0] || 0);
+
+      });
+
+      setDistance(
+        Number(
+          totalDistance.toFixed(2)
+        )
+      );
+
+      setWalkCalories(
+        totalCalories
+      );
+
+      setCalories(
+        totalCalories
+      );
+
+      setActiveMinutes(
+        totalMinutes
+      );
+
+      setWalkTime(
+        `${totalMinutes} min`
+      );
+
+      setSteps(
+        Math.round(
+          totalDistance * 1300
+        )
+      );
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  };
+
+  loadUser();
+
+}, []);
 
   return (
     <View style={styles.container}>
@@ -73,7 +157,7 @@ export default function DashboardScreen() {
           <View style={styles.overviewItem}>
             <Text style={styles.overviewIcon}>👣</Text>
             <Text style={styles.overviewLabel}>Steps</Text>
-            <Text style={styles.overviewValue}>6248</Text>
+            <Text style={styles.overviewValue}>{steps}</Text>
             <Text style={styles.overviewSub}>/10,000</Text>
           </View>
 
@@ -82,7 +166,7 @@ export default function DashboardScreen() {
           <View style={styles.overviewItem}>
             <Text style={styles.overviewIcon}>🔥</Text>
             <Text style={styles.overviewLabel}>Calories</Text>
-            <Text style={styles.overviewValue}>345</Text>
+            <Text style={styles.overviewValue}>{calories}</Text>
             <Text style={styles.overviewSub}>kcal</Text>
           </View>
 
@@ -91,7 +175,7 @@ export default function DashboardScreen() {
           <View style={styles.overviewItem}>
             <Text style={styles.overviewIcon}>🕒</Text>
             <Text style={styles.overviewLabel}>Active Time</Text>
-            <Text style={styles.overviewValue}>45</Text>
+            <Text style={styles.overviewValue}>{activeMinutes}</Text>
             <Text style={styles.overviewSub}>min</Text>
           </View>
         </View>
@@ -120,7 +204,7 @@ export default function DashboardScreen() {
                 Distance
               </Text>
               <Text style={styles.metricValue}>
-                2.35 km
+                {distance} km
               </Text>
             </View>
 
@@ -129,7 +213,7 @@ export default function DashboardScreen() {
                 Time
               </Text>
               <Text style={styles.metricValue}>
-                28:40
+                {walkTime}
               </Text>
             </View>
 
@@ -138,17 +222,31 @@ export default function DashboardScreen() {
                 Calories
               </Text>
               <Text style={styles.metricValue}>
-                168 kcal
+                {walkCalories} kcal
               </Text>
             </View>
           </View>
 
           <View style={styles.progressBackground}>
-            <View style={styles.progressFill} />
+            <View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: `${Math.min(
+                      (steps / 10000) * 100,
+                      100
+                    )}%`,
+                  },
+                ]}
+            /> 
           </View>
 
           <Text style={styles.success}>
-            Great start! Keep going 💪
+            {steps > 8000
+            ? "Amazing work today 🔥"
+            : steps > 4000
+            ? "Great progress 💪"
+            : "Let's get moving 🚶"}
           </Text>
         </View>
 

@@ -7,23 +7,65 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
 import { router } from 'expo-router';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
 
-  const handleResetPassword = () => {
-    if (!email) {
-      Alert.alert('Error', 'Please enter your email address');
+  const handleResetPassword = async () => {
+  try {
+
+    if (!email.trim()) {
+      Alert.alert(
+        "Error",
+        "Please enter your email address"
+      );
       return;
     }
 
-    Alert.alert(
-      'Reset Link Sent',
-      'A password reset link has been sent to your email.'
+    await sendPasswordResetEmail(
+      auth,
+      email.trim()
     );
-  };
 
+    Alert.alert(
+      "Success",
+      "Password reset email has been sent. Please check your inbox."
+    );
+
+    router.push("/auth/login");
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    let message =
+      "Unable to send password reset email.";
+
+    if (
+      error.code ===
+      "auth/user-not-found"
+    ) {
+      message =
+        "No account exists with this email address.";
+    }
+
+    if (
+      error.code ===
+      "auth/invalid-email"
+    ) {
+      message =
+        "Please enter a valid email address.";
+    }
+
+    Alert.alert(
+      "Reset Failed",
+      message
+    );
+  }
+};
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>🚶 WalkWise AI</Text>

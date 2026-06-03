@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   View,
   Text,
@@ -8,6 +9,12 @@ import {
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { auth, db } from "../firebase";
+
+import {
+  collection,
+  getDocs,
+} from "firebase/firestore";
 
 let MapView: any = null;
 let Marker: any = null;
@@ -21,51 +28,69 @@ if (Platform.OS !== "web") {
 export default function ActivityScreen() {
   const router = useRouter();
 
-  const activities = [
-    {
-      title: "Morning Walk",
-      distance: "2.5 km",
-      duration: "00:28:15",
-      time: "Today, 7:30 AM",
-      icon: "🌅",
-      routeColor: "#8B5CF6",
-      goal: "2.5 km",
-    },
-    {
-      title: "Evening Walk",
-      distance: "3.2 km",
-      duration: "00:35:40",
-      time: "Today, 6:15 PM",
-      icon: "🌙",
-      routeColor: "#22C55E",
-      goal: "3.2 km",
-    },
-    {
-      title: "Park Loop",
-      distance: "4.0 km",
-      duration: "00:48:20",
-      time: "May 10, 2025",
-      icon: "🌳",
-      routeColor: "#F59E0B",
-      goal: "4.0 km",
-    },
-    {
-      title: "Weekend Hike",
-      distance: "6.0 km",
-      duration: "01:12:05",
-      time: "May 8, 2025",
-      icon: "🥾",
-      routeColor: "#3B82F6",
-      goal: "6.0 km",
-    },
-  ];
+  const [activities, setActivities] =
+  useState<any[]>([]);
+
+useEffect(() => {
+  loadActivities();
+}, []);
+
+const loadActivities = async () => {
+  try {
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "users",
+          user.uid,
+          "activities"
+        )
+      );
+
+    const activityData =
+      snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+    setActivities(activityData);
+
+  } catch (error) {
+    console.log(
+      "Load Activities Error:",
+      error
+    );
+  }
+};
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ paddingBottom: 120 }}
     >
-      <Text style={styles.header}>🗺 Activities & GPS</Text>
+      <View style={styles.header}>
+      
+                <TouchableOpacity
+                  onPress={() =>
+                    router.replace("/main/dashboard")
+                  }
+                >
+                  <View style={styles.backCircle}>
+                    <Text style={styles.backText}>
+                      ←
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+      
+                <Text style={styles.title}>
+                  
+                </Text>
+      
+              </View>
 
       {/* MAP */}
       <View style={styles.mapContainer}>
@@ -127,60 +152,85 @@ export default function ActivityScreen() {
       <Text style={styles.sectionTitle}>
         Activities
       </Text>
-
-      {activities.map((activity, index) => (
+{activities.length > 0 ? (
+  activities.map(
+    (activity, index) => (
+      <View
+        key={index}
+        style={styles.activityCard}
+      >
         <View
-          key={index}
-          style={styles.activityCard}
+          style={[
+            styles.iconCircle,
+            {
+              backgroundColor:
+                "#6C63FF",
+            },
+          ]}
         >
-          <View
-            style={[
-              styles.iconCircle,
-              {
-                backgroundColor:
-                  activity.routeColor,
-              },
-            ]}
-          >
-            <Text style={styles.icon}>
-              {activity.icon}
-            </Text>
-          </View>
+          <Text style={styles.icon}>
+            🚶
+          </Text>
+        </View>
 
-          <View style={styles.activityInfo}>
-            <Text style={styles.activityTitle}>
-              {activity.title}
-            </Text>
-
-            <Text style={styles.activityText}>
-              {activity.distance} •{" "}
-              {activity.duration}
-            </Text>
-
-            <Text style={styles.activityText}>
-              {activity.time}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.playButton}
-            onPress={() =>
-              router.push({
-                pathname:
-                  "/main/walk-tracker",
-                params: {
-                  title: activity.title,
-                  goal: activity.goal,
-                },
-              })
+        <View
+          style={styles.activityInfo}
+        >
+          <Text
+            style={
+              styles.activityTitle
             }
           >
-            <Text style={styles.playText}>
-              ▶
-            </Text>
-          </TouchableOpacity>
+            {activity.title}
+          </Text>
+
+          <Text
+            style={
+              styles.activityText
+            }
+          >
+            {activity.distance} km •{" "}
+            {activity.duration}
+          </Text>
+
+          <Text
+            style={
+              styles.activityText
+            }
+          >
+            Goal: {activity.goal}
+          </Text>
         </View>
-      ))}
+
+        <TouchableOpacity
+          style={
+            styles.playButton
+          }
+        >
+          <Text
+            style={
+              styles.playText
+            }
+          >
+            ✓
+          </Text>
+        </TouchableOpacity>
+      </View>
+    )
+  )
+) : (
+  <View
+    style={styles.activityCard}
+  >
+    <Text
+      style={{
+        color: "#FFFFFF",
+      }}
+    >
+      No activities yet.
+    </Text>
+  </View>
+)}
     </ScrollView>
   );
 }
@@ -198,6 +248,28 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     marginBottom: 20,
+  },
+
+   title: {
+    color: "#FFFFFF",
+    fontSize: 28,
+    fontWeight: "700",
+  },
+
+   backCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#101A44",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+
+  backText: {
+    color: "#FFFFFF",
+    fontSize: 24,
+    fontWeight: "700",
   },
 
   mapContainer: {

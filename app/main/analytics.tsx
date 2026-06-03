@@ -1,4 +1,15 @@
-import React, { useState } from "react";
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import { auth, db } from "../firebase";
+
+import {
+  collection,
+  getDocs,
+} from "firebase/firestore";
+
 import {
   View,
   Text,
@@ -6,10 +17,102 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { router } from "expo-router";
 
 export default function AnalyticsScreen() {
   const [selectedTab, setSelectedTab] =
     useState("Overview");
+  
+    const [totalSteps, setTotalSteps] =
+  useState(0);
+
+const [totalDistance, setTotalDistance] =
+  useState(0);
+
+const [totalCalories, setTotalCalories] =
+  useState(0);
+
+const [totalMinutes, setTotalMinutes] =
+  useState(0);
+
+useEffect(() => {
+  loadAnalytics();
+}, []);
+
+const loadAnalytics = async () => {
+  try {
+
+    const user =
+      auth.currentUser;
+
+    if (!user) return;
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "users",
+          user.uid,
+          "activities"
+        )
+      );
+
+    let distance = 0;
+    let calories = 0;
+    let minutes = 0;
+
+    snapshot.forEach((doc) => {
+
+      const data =
+        doc.data();
+
+      distance +=
+        Number(
+          data.distance || 0
+        );
+
+      calories +=
+        Number(
+          data.calories || 0
+        );
+
+      const duration =
+        data.duration ||
+        "00:00";
+
+      const parts =
+        duration.split(":");
+
+      minutes +=
+        Number(parts[0] || 0);
+    });
+
+    setTotalDistance(
+      Number(
+        distance.toFixed(2)
+      )
+    );
+
+    setTotalCalories(
+      calories
+    );
+
+    setTotalMinutes(
+      minutes
+    );
+
+    setTotalSteps(
+      Math.round(
+        distance * 1300
+      )
+    );
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
 
   return (
     <ScrollView
@@ -19,10 +122,25 @@ export default function AnalyticsScreen() {
       }}
     >
       {/* Header */}
-      <Text style={styles.title}>
-        📊 Insights
-      </Text>
-
+      <View style={styles.header}>
+      
+                <TouchableOpacity
+                  onPress={() =>
+                    router.replace("/main/dashboard")
+                  }
+                >
+                  <View style={styles.backCircle}>
+                    <Text style={styles.backText}>
+                      ←  
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+      
+                <Text style={styles.title}>
+                  Analytics
+                </Text>
+      
+              </View>
       {/* Tabs */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -102,7 +220,7 @@ export default function AnalyticsScreen() {
           </Text>
 
           <Text style={styles.cardValue}>
-            12,345
+            {totalSteps}
           </Text>
 
           <Text style={styles.cardSub}>
@@ -116,7 +234,7 @@ export default function AnalyticsScreen() {
           </Text>
 
           <Text style={styles.cardValue}>
-            6.2 km
+            {totalDistance} km
           </Text>
         </View>
 
@@ -126,7 +244,7 @@ export default function AnalyticsScreen() {
           </Text>
 
           <Text style={styles.cardValue}>
-            2,450
+            {totalCalories}
           </Text>
 
           <Text style={styles.redText}>
@@ -140,7 +258,7 @@ export default function AnalyticsScreen() {
           </Text>
 
           <Text style={styles.cardValue}>
-            5h 30m
+            {totalMinutes} min
           </Text>
 
           <Text style={styles.greenText}>
@@ -233,11 +351,19 @@ export default function AnalyticsScreen() {
           </Text>
 
           <Text style={styles.extraText}>
-            Average Daily Steps: 8,750
+            Average Daily Steps:
+              {Math.round(totalSteps / 7)}
           </Text>
 
           <Text style={styles.extraText}>
-            Goal Completion: 87%
+            Goal Completion:
+              {Math.min(
+              Math.round(
+              (totalSteps / 10000) * 100
+              ),
+              100
+              )}
+              %
           </Text>
         </View>
       )}
@@ -249,11 +375,11 @@ export default function AnalyticsScreen() {
           </Text>
 
           <Text style={styles.extraText}>
-            Current Score: 82/100
+            Current Score: 85/100
           </Text>
 
           <Text style={styles.extraText}>
-            Improvement: +8%
+            Improvement: +12%
           </Text>
 
           <Text style={styles.extraText}>
@@ -274,11 +400,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
+  header: {
+    marginBottom: 20,
+  },
+
   title: {
     color: "#FFFFFF",
     fontSize: 30,
     fontWeight: "700",
     marginBottom: 20,
+  },
+
+   backCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#101A44",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+
+  backText: {
+    color: "#FFFFFF",
+    fontSize: 24,
+    fontWeight: "700",
   },
 
   tabContainer: {

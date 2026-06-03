@@ -6,7 +6,9 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { Vibration } from "react-native";
 import { Accelerometer } from "expo-sensors";
+import { showNotification } from "../../src/notifications/notificationHelper";
 
 export default function PostureScreen() {
   const [data, setData] = useState({
@@ -15,36 +17,126 @@ export default function PostureScreen() {
     z: 0,
   });
 
-  const [posture, setPosture] = useState("Good");
-  const [score, setScore] = useState(90);
+  const [posture, setPosture] =
+    useState("Good");
+
+  const [score, setScore] =
+    useState(90);
+
+  const [alertSent, setAlertSent] =
+    useState(false);
 
   useEffect(() => {
     Accelerometer.setUpdateInterval(1000);
 
-    const subscription = Accelerometer.addListener(
-      (accelerometerData) => {
-        setData(accelerometerData);
+    const subscription =
+      Accelerometer.addListener(
+        (accelerometerData) => {
 
-        const tilt =
-          Math.abs(accelerometerData.x) +
-          Math.abs(accelerometerData.y);
+          setData(accelerometerData);
 
-        if (tilt > 1.2) {
-          setPosture("Bad");
-          setScore(55);
-        } else {
-          setPosture("Good");
-          setScore(90);
+          const tilt =
+            Math.abs(
+              accelerometerData.x
+            ) +
+            Math.abs(
+              accelerometerData.y
+            );
+
+          if (tilt < 0.5) {
+
+            setPosture("Excellent");
+            setScore(98);
+            setAlertSent(false);
+
+          } else if (
+            tilt < 1.0
+          ) {
+
+            setPosture("Good");
+            setScore(85);
+            setAlertSent(false);
+
+          } else if (
+            tilt < 1.5
+          ) {
+
+            setPosture("Average");
+            setScore(70);
+            setAlertSent(false);
+
+          } else {
+
+            setPosture("Poor");
+            setScore(50);
+
+            if (!alertSent) {
+
+              Vibration.vibrate(500);
+
+              showNotification(
+                "🧍 Posture Alert",
+                "Please straighten your back."
+              );
+
+              setAlertSent(true);
+            }
+          }
         }
-      }
-    );
+      );
 
-    return () => subscription.remove();
-  }, []);
+    return () =>
+      subscription.remove();
+
+  }, [alertSent]);
+
+  const getRecommendation = () => {
+
+    switch (posture) {
+
+      case "Excellent":
+        return "✅ Perfect posture detected. Keep it up!";
+
+      case "Good":
+        return "👍 Good posture. Minor improvements possible.";
+
+      case "Average":
+        return "⚠ Keep shoulders back and align your neck.";
+
+      case "Poor":
+        return "🚨 Please sit upright and straighten your back.";
+
+      default:
+        return "";
+    }
+  };
+
+  const getColor = () => {
+
+    switch (posture) {
+
+      case "Excellent":
+        return "#22C55E";
+
+      case "Good":
+        return "#4CAF50";
+
+      case "Average":
+        return "#F59E0B";
+
+      case "Poor":
+        return "#EF4444";
+
+      default:
+        return "#FFFFFF";
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>🧍 Posture Detection</Text>
+      <Text style={styles.title}>
+        🧍 Posture Detection
+      </Text>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>
@@ -55,10 +147,7 @@ export default function PostureScreen() {
           style={[
             styles.postureText,
             {
-              color:
-                posture === "Good"
-                  ? "#4CAF50"
-                  : "#F44336",
+              color: getColor(),
             },
           ]}
         >
@@ -100,9 +189,7 @@ export default function PostureScreen() {
         </Text>
 
         <Text style={styles.info}>
-          {posture === "Good"
-            ? "✅ Great posture! Keep it up."
-            : "⚠ Sit upright and align your shoulders."}
+          {getRecommendation()}
         </Text>
       </View>
     </ScrollView>
@@ -138,10 +225,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  postureText: {
-    fontSize: 40,
-    fontWeight: "bold",
-  },
+ postureText: {
+  fontSize: 42,
+  fontWeight: "bold",
+  textAlign: "center",
+},
 
   score: {
     color: "#6C63FF",

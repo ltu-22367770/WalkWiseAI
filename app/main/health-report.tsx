@@ -4,164 +4,293 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 
+import { useRouter } from "expo-router";
+import { AnimatedCircularProgress }
+from "react-native-circular-progress";
+
 export default function HealthReportScreen() {
+
+  const router = useRouter();
+
   const walkScore = 86;
   const postureScore = 82;
   const battery = 94;
   const distance = 5.6;
   const calories = 320;
 
-  const overallScore = Math.round(
-    (walkScore + postureScore) / 2
-  );
+  const overallScore =
+    Math.round(
+      (walkScore + postureScore) / 2
+    );
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>
-        📊 Health Report
-      </Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{
+        paddingBottom: 120,
+      }}
+    >
 
-      {/* Overall Score */}
+      {/* Header */}
+
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+        >
+          <View style={styles.backCircle}>
+            <Text style={styles.backText}>
+              ←
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <Text style={styles.title}>
+          Health Report
+        </Text>
+      </View>
+
+      {/* Score Card */}
+
       <View style={styles.scoreCard}>
+
         <Text style={styles.scoreLabel}>
-          Overall Health Score
+          Today's Health Score
         </Text>
 
-        <Text style={styles.bigScore}>
-          {overallScore}/100
-        </Text>
+        <AnimatedCircularProgress
+          size={170}
+          width={14}
+          fill={overallScore}
+          tintColor="#22C55E"
+          backgroundColor="#1E293B"
+          rotation={0}
+        >
+          {() => (
+            <Text style={styles.scoreText}>
+              {overallScore}%
+            </Text>
+          )}
+        </AnimatedCircularProgress>
 
-        <Text style={styles.good}>
+        <Text style={styles.excellent}>
           Excellent Progress
         </Text>
+
       </View>
 
-      {/* Walk Analysis */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>
-          🚶 Walking Analysis
-        </Text>
+      {/* Stats Row */}
 
-        <Text style={styles.info}>
-          Walk Score: {walkScore}/100
-        </Text>
+      <View style={styles.statsRow}>
 
-        <Text style={styles.info}>
-          Distance: {distance} km
-        </Text>
+        <View style={styles.statCard}>
+          <Text style={styles.icon}>
+            🚶
+          </Text>
 
-        <Text style={styles.info}>
-          Calories Burned: {calories}
-        </Text>
+          <Text style={styles.statValue}>
+            {distance}
+          </Text>
+
+          <Text style={styles.statLabel}>
+            KM Walked
+          </Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <Text style={styles.icon}>
+            🔥
+          </Text>
+
+          <Text style={styles.statValue}>
+            {calories}
+          </Text>
+
+          <Text style={styles.statLabel}>
+            Calories
+          </Text>
+        </View>
+
       </View>
 
-      {/* Posture Analysis */}
+      {/* Posture */}
+
       <View style={styles.card}>
+
         <Text style={styles.cardTitle}>
           🧍 Posture Analysis
         </Text>
 
-        <Text style={styles.info}>
-          Posture Score: {postureScore}/100
+        <Text style={styles.largeValue}>
+          {postureScore}%
         </Text>
 
         <Text style={styles.good}>
-          Good posture maintained.
+          Good posture maintained
         </Text>
+
       </View>
 
-      {/* Battery */}
+      {/* Device */}
+
       <View style={styles.card}>
+
         <Text style={styles.cardTitle}>
-          🔋 Device Health
+          🔋 Device Readiness
         </Text>
 
-        <Text style={styles.info}>
-          Battery: {battery}%
+        <Text style={styles.largeValue}>
+          {battery}%
         </Text>
 
         <Text style={styles.good}>
-          Device ready for activity tracking.
+          Ready for activity tracking
         </Text>
+
       </View>
 
       {/* AI Summary */}
+
       <View style={styles.card}>
+
         <Text style={styles.cardTitle}>
-          🤖 AI Coach Summary
+          🤖 AI Wellness Summary
         </Text>
 
         <Text style={styles.info}>
-          You maintained good posture and
-          completed most of your daily
-          walking goals. Continue walking
-          consistently and maintain an
-          upright posture for improved
-          health outcomes.
+          You maintained good posture,
+          completed most walking goals,
+          and demonstrated healthy
+          activity levels today.
+          Continue this consistency for
+          long-term health benefits.
         </Text>
+
       </View>
 
-      {/* Recommendations */}
+      {/* Improvement Plan */}
+
       <View style={styles.card}>
+
         <Text style={styles.cardTitle}>
-          💡 Recommendations
+          💡 Improvement Plan
         </Text>
 
         <Text style={styles.info}>
-          • Walk at least 8,000 steps daily
+          ✓ Walk at least 8,000 steps daily
         </Text>
 
         <Text style={styles.info}>
-          • Maintain straight shoulders
+          ✓ Take posture breaks every hour
         </Text>
 
         <Text style={styles.info}>
-          • Take posture breaks every hour
+          ✓ Stay hydrated throughout the day
         </Text>
 
         <Text style={styles.info}>
-          • Keep battery above 20% when
-          using GPS tracking
+          ✓ Maintain consistent walking habits
         </Text>
+
       </View>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: "#050B2C",
-    padding: 20,
     paddingTop: 70,
+    paddingHorizontal: 20,
+  },
+
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 25,
+  },
+
+  backCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#101A44",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+
+  backText: {
+    color: "#FFF",
+    fontSize: 24,
+    fontWeight: "700",
   },
 
   title: {
-    color: "#FFFFFF",
-    fontSize: 30,
+    color: "#FFF",
+    fontSize: 28,
     fontWeight: "700",
-    marginBottom: 20,
   },
 
   scoreCard: {
     backgroundColor: "#101A44",
-    borderRadius: 25,
+    borderRadius: 28,
     padding: 25,
     alignItems: "center",
     marginBottom: 20,
   },
 
   scoreLabel: {
-    color: "#D6D8E6",
+    color: "#94A3B8",
+    marginBottom: 20,
+  },
+
+  scoreText: {
+    color: "#FFF",
+    fontSize: 38,
+    fontWeight: "700",
+  },
+
+  excellent: {
+    color: "#22C55E",
+    fontWeight: "700",
+    marginTop: 20,
     fontSize: 18,
   },
 
-  bigScore: {
-    color: "#6C63FF",
-    fontSize: 60,
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+
+  statCard: {
+    width: "48%",
+    backgroundColor: "#101A44",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+  },
+
+  icon: {
+    fontSize: 30,
+  },
+
+  statValue: {
+    color: "#FFF",
+    fontSize: 26,
     fontWeight: "700",
+    marginTop: 10,
+  },
+
+  statLabel: {
+    color: "#94A3B8",
+    marginTop: 5,
   },
 
   card: {
@@ -172,22 +301,27 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: {
-    color: "#FFFFFF",
-    fontSize: 20,
+    color: "#FFF",
+    fontSize: 18,
     fontWeight: "700",
-    marginBottom: 10,
+    marginBottom: 12,
   },
 
-  info: {
-    color: "#D6D8E6",
-    fontSize: 16,
-    lineHeight: 24,
+  largeValue: {
+    color: "#6C63FF",
+    fontSize: 34,
+    fontWeight: "700",
   },
 
   good: {
     color: "#22C55E",
-    fontSize: 18,
+    marginTop: 8,
     fontWeight: "700",
-    marginTop: 10,
   },
+
+  info: {
+    color: "#D6D8E6",
+    lineHeight: 24,
+  },
+
 });
