@@ -389,6 +389,7 @@ const loadAnalytics = async () => {
         </View>
       )}
     </ScrollView>
+    
   );
 }
 

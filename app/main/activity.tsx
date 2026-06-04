@@ -152,13 +152,13 @@ const loadActivities = async () => {
       <Text style={styles.sectionTitle}>
         Activities
       </Text>
-{activities.length > 0 ? (
-  activities.map(
-    (activity, index) => (
-      <View
-        key={index}
-        style={styles.activityCard}
-      >
+        {activities.length > 0 ? (
+          activities.map(
+            (activity, index) => (
+              <View
+                  key={index}
+                  style={styles.activityCard}
+                >
         <View
           style={[
             styles.iconCircle,
